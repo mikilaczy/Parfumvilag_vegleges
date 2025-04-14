@@ -1,0 +1,199 @@
+/* Modern betűtípus és globális beállítások */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #333;
+  --secondary: #ff6b6b;
+  --accent: #4ecdc4;
+  --dark: #222;
+  --light: #f4f4f4;
+  --shadow: rgba(0, 0, 0, 0.15);
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease;
+}
+
+/* Modern navigáció */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary) 0%, #2a2a2a 100%);
+  padding: 1.2rem 4rem;
+  box-shadow: 0 4px 6px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar a {
+  color: white;
+  font-weight: 500;
+  margin-left: 2rem;
+  transition: all 0.3s ease;
+}
+
+.navbar a:hover {
+  color: var(--accent);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* Animált oldalsáv */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(135deg, #2a2a2a 0%, var(--primary) 100%);
+  padding: 3rem 2rem;
+  box-shadow: 2px 0 15px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.sidebar ul li {
+  margin-bottom: 1.5rem;
+}
+
+.sidebar ul li a {
+  font-size: 1.1rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.sidebar ul li a::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  bottom: -3px;
+  left: 0;
+  transition: width 0.3s ease;
+}
+
+.sidebar ul li a:hover::before {
+  width: 100%;
+}
+
+/* Tartalom elrendezés */
+.container {
+  padding: 4rem 2rem;
+  margin-left: 280px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Termék kártyák animációkkal */
+.perfume-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.perfume-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px var(--shadow);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.perfume-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.perfume-card img {
+  transition: transform 0.3s ease;
+}
+
+.perfume-card:hover img {
+  transform: scale(1.05);
+}
+
+.perfume-card h3 {
+  font-size: 1.5rem;
+  color: var(--dark);
+  padding: 1rem;
+  transition: color 0.3s ease;
+}
+
+.perfume-card p {
+  color: #666;
+  padding: 0 1rem 1.5rem;
+}
+
+/* Űrlapok modern dizájnja */
+.auth-form, .profile-settings {
+  background: white;
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 15px var(--shadow);
+  transition: transform 0.3s ease;
+}
+
+.auth-form input, .profile-settings input {
+  border: 2px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-form input:focus, .profile-settings input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+  outline: none;
+}
+
+.auth-form button, .profile-settings button {
+  background: linear-gradient(135deg, var(--secondary) 0%, #ff5a5a 100%);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.auth-form button:hover, .profile-settings button:hover {
+  background: linear-gradient(135deg, #ff5a5a 0%, var(--secondary) 100%);
+  transform: translateY(-2px);
+}
+
+/* Különféle animációk */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Válaszreaktív dizájn */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    padding: 1rem;
+  }
+  
+  .container {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .perfume-list {
+    grid-template-columns: 1fr;
+  }
+}
