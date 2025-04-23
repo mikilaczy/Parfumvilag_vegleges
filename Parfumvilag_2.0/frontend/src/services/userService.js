@@ -1,7 +1,6 @@
-// frontend/src/services/userService.js
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000"; // Próbáld meg így?
+const API_BASE_URL = "http://localhost:5000";
 
 const getAuthConfig = () => {
   const token = localStorage.getItem("token");

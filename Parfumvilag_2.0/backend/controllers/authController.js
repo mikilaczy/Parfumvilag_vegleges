@@ -110,8 +110,8 @@ exports.login = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: user.phone, // <<< HOZZÁADVA
-        profile_picture_url: user.profile_picture_url, // <<< HOZZÁADVA
+        phone: user.phone,
+        profile_picture_url: user.profile_picture_url,
         is_admin: user.is_admin, // Ha az admin státusz is kell a frontendnek
         // Fontos: A 'password' mezőt NE add vissza!
       },

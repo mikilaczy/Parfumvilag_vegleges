@@ -1,12 +1,10 @@
-// src/components/Sidebar.js
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom"; // Csak useSearchParams kell
-import { getPriceRange } from "../services/perfumeService"; // Szükséges a getPriceRange
+import { useSearchParams } from "react-router-dom";
+import { getPriceRange } from "../services/perfumeService";
 
 const Sidebar = () => {
   // Hookok
   const [searchParams, setSearchParams] = useSearchParams();
-  // const navigate = useNavigate(); // Valószínűleg nem kell
 
   // State inicializálása - Stringekkel a konzisztencia érdekében
   const [brandFilter, setBrandFilter] = useState(
@@ -182,9 +180,8 @@ const Sidebar = () => {
     if (windowWidth <= 991) setIsOpen(false);
   };
 
-  // Clear all filters and reset URL
+  // Törli a filtereket
   const clearFilters = () => {
-    // Reset state
     setBrandFilter("");
     setScentFilter("");
     setGenderFilter("");
@@ -206,26 +203,24 @@ const Sidebar = () => {
     if (windowWidth <= 991) setIsOpen(false);
   };
 
-  // Toggle sidebar visibility on mobile
+  // Toggle sidebar láthatósága  mobilon
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  // Dynamic sidebar class
   const sidebarClass = `sidebar d-flex flex-column ${
     windowWidth <= 991 && !isOpen ? "hidden" : ""
   }`;
 
-  // Slider input handlers to ensure min <= max
   const handleMinPriceChange = (e) => {
     const newVal = parseInt(e.target.value, 10);
     const currentMax = parseInt(maxPriceFilter || actualMax, 10);
-    // Set min to the new value, but not higher than current max
+
     setMinPriceFilter(String(Math.min(newVal, currentMax)));
   };
 
   const handleMaxPriceChange = (e) => {
     const newVal = parseInt(e.target.value, 10);
     const currentMin = parseInt(minPriceFilter || actualMin, 10);
-    // Set max to the new value, but not lower than current min
+
     setMaxPriceFilter(String(Math.max(newVal, currentMin)));
   };
 

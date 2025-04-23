@@ -1,18 +1,19 @@
-// frontend/src/components/PerfumeCard.js
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../App"; // AuthContext importálása
+import React, { useState, useEffect, useContext } from "react"; // React és szükséges Hook-ok importálása
+import { Link, useNavigate } from "react-router-dom"; // Navigációhoz szükséges komponensek
+import { AuthContext } from "../App"; // Globális autentikációs kontextus importálása
 import {
   getMyFavoriteIds,
   addFavorite,
   removeFavorite,
-} from "../services/savedPerfumeService";
-import "../style.css";
+} from "../services/savedPerfumeService"; // Kedvencek kezeléséhez szükséges service függvények
+import "../style.css"; // Stíluslap importálása
 
-// Login Prompt Modal Component (Simple Example)
+// Egyszerűsített bejelentkezési felugró ablak komponens
 const LoginPromptModal = ({ onClose, onLoginRedirect }) => (
   <>
+    {/* Áttetsző háttér, amelyre kattintva bezáródik a modal */}
     <div className="login-prompt-overlay" onClick={onClose} />
+    {/* A modal tényleges tartalma */}
     <div className="login-prompt">
       <button className="close-btn" onClick={onClose}>
         ×
@@ -21,13 +22,15 @@ const LoginPromptModal = ({ onClose, onLoginRedirect }) => (
       <p>Be kell jelentkezni a kedvencek kezeléséhez.</p>
       <div className="d-flex justify-content-center mt-3">
         {" "}
-        {/* Buttons centered */}
+        {/* Gombok középre igazítva */}
         <button className="login-btn me-2" onClick={onLoginRedirect}>
           {" "}
-          {/* Added margin */}
+          {/* Bejelentkezés gomb */}
           Bejelentkezés
         </button>
         <button className="cancel-btn" onClick={onClose}>
+          {" "}
+          {/* Mégse gomb */}
           Mégse
         </button>
       </div>
@@ -35,31 +38,34 @@ const LoginPromptModal = ({ onClose, onLoginRedirect }) => (
   </>
 );
 
+// Parfüm kártya komponens definíciója
+// - `perfume`: A megjelenítendő parfüm adatait tartalmazó objektum.
+// - `onFavoriteChange`: Opcionális callback függvény, ami akkor hívódik meg, ha a kedvenc állapot változik.
 const PerfumeCard = ({ perfume, onFavoriteChange }) => {
-  // Destructuring perfume properties with defaults
+  // Parfüm tulajdonságainak destrukturálása alapértelmezett értékekkel, ha hiányoznak
   const {
     id,
-    name = "Ismeretlen Parfüm",
-    brand_name: brand,
-    price,
-    image_url,
-  } = perfume || {};
+    name = "Ismeretlen Parfüm", // Név, vagy alapértelmezett szöveg
+    brand_name: brand, // Márkanév (átnevezve 'brand'-re)
+    price, // Ár
+    image_url, // Kép URL
+  } = perfume || {}; // Ha a 'perfume' objektum undefined, üres objektumot használ
 
-  // Auth context and navigation
-  const { isLoggedIn, token, logout } = useContext(AuthContext); // Get logout from context
-  const navigate = useNavigate();
+  // Autentikációs kontextus és navigációs hook használata
+  const { isLoggedIn, token, logout } = useContext(AuthContext); // Bejelentkezési állapot, token és kijelentkeztető függvény a kontextusból
+  const navigate = useNavigate(); // Programozott navigációhoz
 
-  // Component state
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [loadingFavorite, setLoadingFavorite] = useState(false); // Loading state specifically for toggle action
+  // Komponens belső állapotai
+  const [isFavorite, setIsFavorite] = useState(false); // Tárolja, hogy az adott parfüm kedvenc-e
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // Bejelentkezési felugró ablak láthatósága
+  const [loadingFavorite, setLoadingFavorite] = useState(false); // Töltési állapot a kedvenc gomb műveleteihez
 
-  // Format price function
+  // Ár formázása forintra
   const formattedPrice = () => {
     if (price === undefined || price === null) {
-      return "Ár információ nem elérhető";
+      return "Ár információ nem elérhető"; // Ha nincs ár adat
     }
-    // Format with HUF currency, no fraction digits
+    // Nemzetközi számformázó használata HUF pénznemmel, tizedesjegyek nélkül
     return new Intl.NumberFormat("hu-HU", {
       style: "currency",
       currency: "HUF",
@@ -67,27 +73,28 @@ const PerfumeCard = ({ perfume, onFavoriteChange }) => {
     }).format(price);
   };
 
-  // Effect to check initial favorite status
+  // Effect hook: a komponens betöltődésekor ellenőrzi, hogy a parfüm kedvenc-e
   useEffect(() => {
-    let isMounted = true; // Flag to prevent state updates on unmounted component
+    let isMounted = true; // Zászló, hogy megakadályozzuk az állapotfrissítést, ha a komponens már nincs a DOM-ban
 
+    // Aszinkron függvény a kedvenc állapot ellenőrzésére
     const checkIfFavorite = async () => {
-      // Skip check if not logged in or perfume ID is missing
+      // Ha nincs bejelentkezve a felhasználó, vagy hiányzik a parfüm ID, nem kell ellenőrizni
       if (!isLoggedIn || !id) {
-        if (isMounted) setIsFavorite(false); // Ensure it's false if not logged in
+        if (isMounted) setIsFavorite(false); // Biztosítjuk, hogy ilyenkor false legyen az állapot
         return;
       }
 
-      // No visual loading indicator for the initial check needed here
-      // setLoadingFavorite(true); // <-- Removed
+      // Az inicializáló ellenőrzéshez itt nem kell vizuális töltésjelző
 
       try {
         // console.log(`PerfumeCard (${id}): Checking favorite status...`);
-        const favoriteIds = await getMyFavoriteIds(); // Fetch user's favorite IDs
+        const favoriteIds = await getMyFavoriteIds(); // Felhasználó kedvenc parfümjeinek ID-listájának lekérése
         if (isMounted) {
-          const fav = favoriteIds.includes(id);
+          // Csak akkor frissítjük az állapotot, ha a komponens még be van illesztve
+          const fav = favoriteIds.includes(id); // Ellenőrzi, hogy az aktuális parfüm ID szerepel-e a listában
           // console.log(`PerfumeCard (${id}): Is favorite? ${fav}`);
-          setIsFavorite(fav); // Update local state based on fetched data
+          setIsFavorite(fav); // Beállítja a lokális 'isFavorite' állapotot
         }
       } catch (error) {
         console.error(
@@ -95,66 +102,71 @@ const PerfumeCard = ({ perfume, onFavoriteChange }) => {
           error
         );
 
-        // Check if the error indicates an invalid/expired token
+        // Token hiba ellenőrzése (pl. lejárt token)
         if (error && error.error === "Token érvénytelen!") {
           console.warn(
             `PerfumeCard (${id}): Invalid token detected during check. Logging out.`
           );
           if (isMounted) {
-            logout(); // Call context logout function
-            // No need to navigate here, protected routes or App.js will handle redirection
+            logout(); // Kijelentkeztetés a kontextus segítségével
+            // Itt nem szükséges navigálni, a védett útvonalak vagy az App.js kezeli
           }
         } else if (isMounted) {
-          // Handle other errors (e.g., network error) - maybe log or ignore
+          // Egyéb hibák kezelése (pl. hálózati hiba) - naplózás vagy figyelmen kívül hagyás
           console.error(
             `PerfumeCard (${id}): Other error checking favorite status:`,
             error.message
           );
-          // Keep isFavorite as false in case of non-auth errors during check
+          // Nem autentikációs hibák esetén is 'false'-ra állítjuk a kedvenc állapotot
           setIsFavorite(false);
         }
       } finally {
-        // No loading state to reset here for the initial check
-        // setLoadingFavorite(false); // <-- Removed
+        // Itt nincs mit visszaállítani a töltési állapotnál az inicializálásnál
       }
     };
 
-    checkIfFavorite(); // Run the check function
+    checkIfFavorite(); // Az ellenőrző függvény futtatása
 
+    // Tisztító függvény: beállítja a 'isMounted' zászlót false-ra, amikor a komponens eltávolításra kerül
     return () => {
       isMounted = false;
     };
+    // Függőségek: az effect újra lefut, ha az 'id', 'isLoggedIn', 'token' vagy 'logout' megváltozik
   }, [id, isLoggedIn, token, logout]);
 
- 
+  // Kedvenc állapot váltását kezelő függvény (szív ikonra kattintáskor)
   const handleToggleFavorite = async (e) => {
-    e.preventDefault(); 
-    e.stopPropagation(); 
+    e.preventDefault(); // Megakadályozza az alapértelmezett eseményt (pl. Link követése)
+    e.stopPropagation(); // Megállítja az esemény továbbterjedését a szülő elemek felé
 
+    // Ha a felhasználó nincs bejelentkezve, megjelenítjük a bejelentkezési ablakot
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       return;
     }
 
-  
+    // Ha már folyamatban van egy kedvenc művelet, vagy nincs parfüm ID, nem csinálunk semmit
     if (loadingFavorite || !id) return;
 
-    setLoadingFavorite(true); 
+    setLoadingFavorite(true); // Töltési állapot bekapcsolása (pl. gomb letiltása)
 
     try {
-      let nowFavorite;
-      
+      let nowFavorite; // Az új kedvenc állapot tárolására
+
+      // Ha jelenleg kedvenc, akkor eltávolítjuk
       if (isFavorite) {
-        await removeFavorite(id); 
-        nowFavorite = false;
+        await removeFavorite(id); // API hívás az eltávolításhoz
+        nowFavorite = false; // Az új állapot false lesz
       } else {
-        await addFavorite(id); 
-        nowFavorite = true;
+        // Ha nem kedvenc, akkor hozzáadjuk
+        await addFavorite(id); // API hívás a hozzáadáshoz
+        nowFavorite = true; // Az új állapot true lesz
       }
 
+      // Lokális állapot frissítése az új értékkel
       setIsFavorite(nowFavorite);
 
-      
+      // Ha van külső callback függvény (onFavoriteChange), meghívjuk az új állapottal
       if (onFavoriteChange) {
         onFavoriteChange(id, nowFavorite);
       }
@@ -164,78 +176,83 @@ const PerfumeCard = ({ perfume, onFavoriteChange }) => {
         error
       );
 
-  
+      // Token hiba ellenőrzése és kezelése (kijelentkeztetés)
       if (error && error.error === "Token érvénytelen!") {
         console.warn(
           `PerfumeCard (${id}): Invalid token detected on toggle. Logging out.`
         );
-        logout(); 
+        logout(); // Kijelentkeztetés
       } else {
-      
+        // Egyéb hibák esetén alert üzenet megjelenítése
         alert(
           `Hiba: ${error.message || "Nem sikerült módosítani a kedvencet."}`
         );
       }
     } finally {
-      setLoadingFavorite(false); // Stop loading indicator regardless of outcome
+      setLoadingFavorite(false); // Töltési állapot kikapcsolása minden esetben (siker, hiba)
     }
   };
 
-  // JSX for the component
+  // Komponens JSX struktúrája
   return (
     <>
-      {/* Perfume Card Structure */}
+      {/* Parfüm kártya fő konténere */}
       <div className="perfume-card h-100">
-        {/* Link wrapping the main content */}
+        {" "}
+        {/* `h-100` a magasság kitöltéséhez (Bootstrap) */}
+        {/* Link, amely a kártya fő tartalmát foglalja magába és a részletes oldalra navigál */}
         <Link
-          to={`/parfume/${id}`} // Navigate to detail page on click
-          className="perfume-card-link d-flex flex-column h-100"
-          style={{ textDecoration: "none", color: "inherit" }}
+          to={`/parfume/${id}`} // Dinamikus útvonal a parfüm ID-val
+          className="perfume-card-link d-flex flex-column h-100" // Flexbox a belső elrendezéshez
+          style={{ textDecoration: "none", color: "inherit" }} // Alapértelmezett link stílusok felülírása
         >
-          {/* Perfume Image */}
+          {/* Parfüm képe */}
           <img
-            src={image_url || "https://via.placeholder.com/220x200?text=Parfüm"} // Placeholder image
-            alt={name}
-            className="perfume-card-img" // Ensure CSS handles height/object-fit
+            src={image_url || "https://via.placeholder.com/220x200?text=Parfüm"} // Kép URL vagy placeholder
+            alt={name} // Kép alt textje
+            className="perfume-card-img" // Stílusosztály a képhez
           />
-          {/* Card Body */}
+          {/* Kártya törzse */}
           <div className="perfume-card-body d-flex flex-column flex-grow-1 justify-content-between">
-            {/* Top part of the body (Title, Brand, Price) */}
+            {/* Flexbox a tartalom függőleges elosztásához */}
+            {/* Felső rész: Cím, Márka, Ár */}
             <div>
               <h3 className="perfume-card-title">{name}</h3>
-              {/* Display brand if available */}
+              {/* Márka megjelenítése, ha van */}
               {brand && (
                 <p className="perfume-card-subtitle text-muted small mb-1">
                   {brand}
                 </p>
               )}
               <p className="perfume-card-text">{formattedPrice()}</p>
+              {/* Formázott ár */}
             </div>
-            {/* Bottom part could contain other info or actions if needed */}
+            {/* Alsó rész: Ide kerülhetnének további információk vagy gombok */}
           </div>
         </Link>
-
-        {/* Favorite Button (positioned absolutely via CSS) */}
+        {/* Kedvenc gomb (CSS segítségével pozícionálva a kártya sarkába) */}
         <button
           className={`favorite-btn ${isFavorite ? "active" : ""} ${
-            loadingFavorite ? "disabled" : "" // Add disabled class when loading
+            // Dinamikus osztályok: 'active' ha kedvenc
+            loadingFavorite ? "disabled" : "" // 'disabled' ha töltési állapotban van
           }`}
-          onClick={handleToggleFavorite}
-          disabled={loadingFavorite} // Disable button during API call
+          onClick={handleToggleFavorite} // Kattintás eseménykezelő
+          disabled={loadingFavorite} // Gomb letiltása API hívás alatt
           aria-label={
+            // Akadálymentesítés: képernyőolvasóknak szánt címke
             isFavorite
               ? "Eltávolítás a kedvencekből"
               : "Hozzáadás a kedvencekhez"
           }
-          // The heart icon (♥) is added via CSS ::before pseudo-element
+          // A szív ikon (♥) a CSS ::before pszeudo-elemmel kerül hozzáadásra
         />
       </div>
 
-      {/* Login Prompt Modal (conditionally rendered) */}
+      {/* Bejelentkezési felugró ablak (feltételesen jelenik meg) */}
       {showLoginPrompt && (
         <LoginPromptModal
-          onClose={() => setShowLoginPrompt(false)} // Handler to close the modal
-          onLoginRedirect={() => navigate("/bejelentkezes")} // Handler to redirect to login
+          onClose={() => setShowLoginPrompt(false)} // Bezárás eseménykezelő
+          onLoginRedirect={() => navigate("/bejelentkezes")} // Bejelentkezés oldalra átirányítás
         />
       )}
     </>

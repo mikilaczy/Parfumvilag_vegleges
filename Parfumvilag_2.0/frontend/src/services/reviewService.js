@@ -1,4 +1,3 @@
-// frontend/src/services/reviewService.js
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:5000/api"; // Vagy a te URL-ed
@@ -36,7 +35,7 @@ export const createReview = async (perfumeId, reviewData) => {
 
   // Küldendő adatok (backend controller elvárásai szerint)
   const dataToSend = {
-    scent_trail_rating: reviewData.sillage, // Map frontend state to backend names
+    scent_trail_rating: reviewData.sillage,
     longevity_rating: reviewData.longevity,
     value_rating: reviewData.value,
     overall_impression: reviewData.overall,
@@ -93,7 +92,7 @@ export const updateReview = async (reviewId, reviewData) => {
   }
 };
 
-// Értékelés törlése (ha kell)
+// Értékelés törlése
 export const deleteReview = async (reviewId) => {
   const config = getAuthConfig();
   if (!config) throw new Error("Bejelentkezés szükséges.");
@@ -114,6 +113,3 @@ export const deleteReview = async (reviewId) => {
     );
   }
 };
-
-// Nincs szükség getAllReviews, getReviewById frontend service-re általában,
-// hacsak nincs szerkesztés/törlés funkció.

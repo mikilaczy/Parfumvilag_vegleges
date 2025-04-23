@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser, updateUser } from "../services/userService";
 import { AuthContext } from "../App";
-// *** VISSZAÁLLÍTÁS - Biztosítsd, hogy az útvonal helyes! ***
 import placeholderImage from "../assets/placeholder.png";
 
 const Profile = () => {
@@ -137,9 +136,9 @@ const Profile = () => {
 
       if (response && response.success && response.user) {
         console.log("[handleEditSubmit] Update successful.");
-        setUser(response.user); // Update local state with received data
-        contextLogin(response.user, localStorage.getItem("token")); // Update context
-        initializeForm(response.user); // Sync form
+        setUser(response.user);
+        contextLogin(response.user, localStorage.getItem("token"));
+        initializeForm(response.user);
         setEditing(false);
         setUpdateSuccess("Adatok sikeresen frissítve!");
         setTimeout(() => setUpdateSuccess(""), 4000);
@@ -154,20 +153,18 @@ const Profile = () => {
       setUpdateError(err.message || "Hiba történt a mentés során.");
     } finally {
       console.log("[handleEditSubmit] Setting updateLoading to false.");
-      setUpdateLoading(false); // Stop loading indicator
+      setUpdateLoading(false);
     }
   };
 
   // --- Logout & Cancel ---
   const handleLogout = () => {
-    /* ... */
     if (window.confirm("Biztosan ki szeretne lépni?")) {
       contextLogout();
       navigate("/");
     }
   };
   const handleCancelEdit = () => {
-    /* ... */
     setEditing(false);
     if (user) initializeForm(user);
     setUpdateError("");

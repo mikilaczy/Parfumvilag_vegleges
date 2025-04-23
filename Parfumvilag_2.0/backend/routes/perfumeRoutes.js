@@ -4,7 +4,7 @@ const PerfumeController = require("../controllers/perfumeController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/batch", PerfumeController.getPerfumesByIds);
-console.log("--- perfumeRoutes.js loaded ---"); // Eljut ide?
+console.log("--- perfumeRoutes.js loaded ---");
 
 // ... esetleges router.use middleware ...
 console.log("Middleware added (if any)");
@@ -16,7 +16,7 @@ router.get("/price-range", (req, res, next) => {
 });
 router.get("/all", PerfumeController.getAllPerfumes);
 router.get("/random", PerfumeController.getRandomPerfumes);
-router.get("/featured", PerfumeController.getFeaturedPerfumes); // Might need adjustment based on DB
+router.get("/featured", PerfumeController.getFeaturedPerfumes);
 router.get("/:id", PerfumeController.getPerfumeById);
 router.get("/price-range", PerfumeController.getPriceRange);
 

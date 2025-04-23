@@ -183,8 +183,8 @@ exports.getAllPerfumes = (req, res, next) => {
   db.query(sql, finalParams, (err, results) => {
     if (err) {
       console.error("SQL Hiba a parfümök lekérdezésekor:", err);
-      // Használjuk a next()-et a központi hibakezelőhöz
-      return next(err); // Vagy res.status(500)... de a next jobb
+
+      return next(err);
     }
 
     db.query(countSql, countParams, (countErr, countResults) => {
@@ -234,20 +234,16 @@ exports.getRandomPerfumes = async (req, res, next) => {
 };
 
 exports.getFeaturedPerfumes = (req, res, next) => {
-  // next hozzáadása
-  // Itt feltételezzük, hogy a Perfume modell kezeli ezt
-  // Ha direkt SQL-t használsz, akkor a try-catch + next itt is jó lenne
   Perfume.getFeaturedPerfumes((err, results) => {
     if (err) {
       console.error("Error fetching featured perfumes:", err);
-      return next(err); // next használata
+      return next(err);
     }
     res.status(200).json(results);
   });
 };
 
 exports.getPerfumeById = (req, res, next) => {
-  // next hozzáadása
   const perfumeIdParam = req.params.id;
   const perfumeId = parseInt(perfumeIdParam, 10);
 
@@ -279,7 +275,7 @@ exports.getPerfumeById = (req, res, next) => {
   db.query(perfumeSql, [perfumeId], (err, perfumeResult) => {
     if (err) {
       console.error("SQL Hiba (parfüm):", err);
-      return next(err); // next használata
+      return next(err);
     }
 
     if (perfumeResult.length === 0) {
@@ -291,7 +287,7 @@ exports.getPerfumeById = (req, res, next) => {
     db.query(storesSql, [perfumeId], (storeErr, storeResult) => {
       if (storeErr) {
         console.error("SQL Hiba (üzletek):", storeErr);
-        return next(storeErr); // next használata
+        return next(storeErr);
       }
 
       const perfumeData = {
@@ -306,36 +302,31 @@ exports.getPerfumeById = (req, res, next) => {
 };
 
 exports.createPerfume = (req, res, next) => {
-  // next hozzáadása
-  // Ha a Perfume modell async/await-et használ, akkor try-catch + next
   Perfume.createPerfume(req.body, (err, results) => {
     if (err) {
       console.error("Error creating perfume:", err);
-      return next(err); // next használata
+      return next(err);
     }
     res.status(201).json({ id: results.insertId, ...req.body });
   });
 };
 
 exports.updatePerfume = (req, res, next) => {
-  // next hozzáadása
-  // Ha a Perfume modell async/await-et használ, akkor try-catch + next
   Perfume.updatePerfume(req.params.id, req.body, (err, results) => {
     if (err) {
       console.error("Error updating perfume:", err);
-      return next(err); // next használata
+      return next(err);
     }
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: "Nincs ilyen parfüm!" });
     }
-    // Itt is lehetne hibakezelés a getPerfumeById-ra
+
     Perfume.getPerfumeById(req.params.id, (getErr, getResults) => {
       if (getErr) {
         console.error("Error fetching perfume after update:", getErr);
-        return next(getErr); // next használata
+        return next(getErr);
       }
       if (getResults.length === 0) {
-        // Ez nem valószínű, de jobb ellenőrizni
         return res
           .status(404)
           .json({ error: "Parfüm nem található a frissítés után!" });
@@ -346,12 +337,10 @@ exports.updatePerfume = (req, res, next) => {
 };
 
 exports.deletePerfume = (req, res, next) => {
-  // next hozzáadása
-  // Ha a Perfume modell async/await-et használ, akkor try-catch + next
   Perfume.deletePerfume(req.params.id, (err, results) => {
     if (err) {
       console.error("Error deleting perfume:", err);
-      return next(err); // next használata
+      return next(err);
     }
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: "Nincs ilyen parfüm!" });
@@ -361,7 +350,6 @@ exports.deletePerfume = (req, res, next) => {
 };
 
 exports.getPerfumesByIds = async (req, res, next) => {
-  // next már használatban van
   const idsString = req.query.ids;
   if (!idsString) {
     return res.status(400).json({ error: "Hiányzó 'ids' query paraméter." });
@@ -384,24 +372,19 @@ exports.getPerfumesByIds = async (req, res, next) => {
         GROUP BY p.id
     `;
   try {
-    const { queryAsync } = require("../models/User"); // Feltételezve, hogy létezik
+    const { queryAsync } = require("../models/User");
     const results = await queryAsync(sql, [ids]);
     res.status(200).json(results);
   } catch (err) {
     console.error("Error fetching perfumes by IDs:", err);
-    next(err); // next használata
+    next(err);
   }
 };
 
 exports.toggleFavorite = async (req, res, next) => {
-  // next hozzáadása
-  // Ez a funkció valószínűleg nem a perfumeControllerbe való,
-  // hanem inkább egy savedPerfumeControllerbe vagy userControllerbe.
-  // De ha itt marad, akkor is használjuk a next-et.
   const { perfume_id } = req.body;
-  // Fontos: A user_id-t az authMiddleware-ből kellene venni (req.user.id)
-  // const user_id = req.user.id;
-  const user_id = 1; // IDEIGLENESEN, amíg az authMiddleware nincs bekötve rendesen ide
+
+  const user_id = 1;
 
   if (!req.user || !req.user.id) {
     // Ellenőrzés, hogy a user be van-e jelentkezve
@@ -411,10 +394,9 @@ exports.toggleFavorite = async (req, res, next) => {
 
   try {
     // db.query Promise alapú változatát kellene használni itt is (pl. queryAsync)
-    const { queryAsync } = require("../models/User"); // Feltételezve, hogy létezik
+    const { queryAsync } = require("../models/User");
 
     const [existing] = await queryAsync(
-      // Kell await!
       "SELECT id FROM saved_perfumes WHERE user_id = ? AND perfume_id = ?",
       [real_user_id, perfume_id]
     ); // Csak az id-t kérjük le
@@ -423,11 +405,10 @@ exports.toggleFavorite = async (req, res, next) => {
       // Ellenőrizzük, hogy a lekérdezés adott-e vissza sort
       await queryAsync("DELETE FROM saved_perfumes WHERE id = ?", [
         existing.id,
-      ]); // Kell await!
+      ]);
       res.json({ isFavorite: false, message: "Eltávolítva a kedvencekből." });
     } else {
       await queryAsync(
-        // Kell await!
         "INSERT INTO saved_perfumes (user_id, perfume_id) VALUES (?, ?)",
         [real_user_id, perfume_id]
       );
@@ -435,19 +416,18 @@ exports.toggleFavorite = async (req, res, next) => {
     }
   } catch (err) {
     console.error("Error toggling favorite:", err);
-    next(err); // next használata
+    next(err);
   }
 };
 
 exports.getPriceRange = async (req, res, next) => {
-  // next már használatban van
   const sql = `
         SELECT MIN(s.price) AS minPrice, MAX(s.price) AS maxPrice
         FROM stores s
         WHERE s.price IS NOT NULL AND s.price > 0
     `;
   try {
-    const { queryAsync } = require("../models/User"); // Feltételezve, hogy létezik
+    const { queryAsync } = require("../models/User");
     const results = await queryAsync(sql);
     if (results && results.length > 0 && results[0].minPrice !== null) {
       res.status(200).json({
@@ -459,6 +439,6 @@ exports.getPriceRange = async (req, res, next) => {
     }
   } catch (err) {
     console.error("Error fetching price range:", err);
-    next(err); // next használata
+    next(err);
   }
 };

@@ -39,7 +39,7 @@ const brandRoutes = require("./routes/brandRoutes");
 
 const noteRoutes = require("./routes/noteRoutes");
 const perfumeRoutes = require("./routes/perfumeRoutes");
-const perfumeNoteRoutes = require("./routes/perfumeNoteRoutes");
+
 const reviewRoutes = require("./routes/reviewRoutes");
 const savedPerfumeRoutes = require("./routes/savedPerfumeRoutes");
 
@@ -51,7 +51,7 @@ app.use("/api/brands", brandRoutes);
 
 app.use("/api/notes", noteRoutes);
 app.use("/api/perfumes", perfumeRoutes);
-app.use("/api/perfume-notes", perfumeNoteRoutes);
+
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/saved-perfumes", savedPerfumeRoutes);
 
