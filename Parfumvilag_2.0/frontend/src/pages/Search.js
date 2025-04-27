@@ -246,7 +246,6 @@ const Search = () => {
               aria-label="Perfume pagination"
             >
               <ul className="pagination pagination-sm shadow-sm">
-                {" "}
                 {/* Kisebb méretű lapozó */}
                 {/* Előző oldal gomb */}
                 <PageButton
@@ -299,7 +298,7 @@ const Search = () => {
                   onClick={handlePageChange}
                   isDisabled={currentPage === totalPages} // Letiltva az utolsó oldalon
                 >
-                  {/* Következő ikon */}
+                  » {/* Következő ikon */}
                 </PageButton>
               </ul>
             </nav>

@@ -33,19 +33,11 @@ export const createReview = async (perfumeId, reviewData) => {
   const config = getAuthConfig();
   if (!config) throw new Error("Bejelentkezés szükséges az értékeléshez.");
 
-  // Küldendő adatok (backend controller elvárásai szerint)
-  const dataToSend = {
-    scent_trail_rating: reviewData.sillage,
-    longevity_rating: reviewData.longevity,
-    value_rating: reviewData.value,
-    overall_impression: reviewData.overall,
-    review_text: reviewData.comment,
-  };
-
   try {
+    // Közvetlenül a kapott reviewData-t küldjük el.
     const response = await axios.post(
       `${API_BASE_URL}/reviews/perfume/${perfumeId}`,
-      dataToSend,
+      reviewData,
       config
     );
     return response.data; // { success: true, message: '...', review: {...} }
@@ -54,6 +46,7 @@ export const createReview = async (perfumeId, reviewData) => {
       "Error creating review:",
       error.response?.data || error.message
     );
+
     throw (
       error.response?.data || new Error("Nem sikerült elküldeni az értékelést.")
     );
