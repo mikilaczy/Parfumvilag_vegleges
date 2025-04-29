@@ -72,11 +72,11 @@ const Home = () => {
       </section>
       {/* Ajánlott Parfümök Szekció */}
       <section className="featured-section container my-5">
-        {" "}
+        
         {/* Kiemelt ajánlatok szekció konténere */}
         <h2 className="section-title text-center mb-4">
-          Kiemelt Ajánlataink
-        </h2>{" "}
+           Ajánlataink
+        </h2>
         {/* Szekció címe */}
         {/* Töltési állapot megjelenítése */}
         {loading && (
