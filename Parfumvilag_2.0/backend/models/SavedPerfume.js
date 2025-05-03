@@ -52,6 +52,6 @@ module.exports = {
   isPerfumeSaved,
   createSavedPerfume,
   deleteSavedPerfumeByPerfumeId,
-  deleteSavedPerfumeById, // régi
+  deleteSavedPerfumeById,
   // getAllSavedPerfumes, getSavedPerfumeById - valószínűleg nem kellenek globálisan
 };

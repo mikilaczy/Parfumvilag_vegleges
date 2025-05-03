@@ -1,17 +1,15 @@
 const db = require("../db");
 const bcrypt = require("bcryptjs");
-const { queryAsync } = require("./helpers"); // Assuming queryAsync is in a helper file now
-
-// Helper function to promisify db.query
+const { queryAsync } = require("./helpers");
 
 const getAllUsers = async () => {
   return queryAsync(
     "SELECT id, name, email, phone, profile_picture_url, is_admin, created_at FROM users"
-  ); // Password excluded
+  );
 };
 
 const getUserById = async (id) => {
-  console.log(`[Model getUserById] Fetching user with ID: ${id}`); // Log Start
+  console.log(`[Model getUserById] Fetching user with ID: ${id}`);
   const sql =
     "SELECT id, name, email, phone, profile_picture_url, is_admin, created_at FROM users WHERE id = ?"; // Pontos SELECT lista
   try {
@@ -138,5 +136,5 @@ module.exports = {
   getUserByEmail,
   createUser,
   updateUser,
-  queryAsync, // Esetleg exportálhatod más modellekhez is
+  queryAsync,
 };
